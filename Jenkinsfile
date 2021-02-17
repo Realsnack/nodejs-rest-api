@@ -1,6 +1,6 @@
 node {
     stage('Clone repo') {
-        git branch: 'main', credentialsId: 'realsnack-git', url 'https://github.com/Realsnack/nodejs-rest-api.git'
+        git branch: 'main', credentialsId: 'realsnack-git', url: 'https://github.com/Realsnack/nodejs-rest-api.git'
     }
     
     stage('Build docker image') {
