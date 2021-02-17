@@ -7,12 +7,12 @@ const favicon = require('serve-favicon');
 require('dotenv').config();
 
 const app = express()
-const port = 3000;
+const port = 3080;
 const middlewares = require('./middlewares');
 const redis = require('./api/redis');
 
 app.get('/', (req,res) => {
-    res.statuscode = 200;
+    res.statusCode = 200;
     res.json({
         message: 'Hello World',
     })
@@ -24,6 +24,8 @@ app.get('/:name', (req,res) => {
         message: `Hello ${req.params.name}`,
     })
 });
+
+app.use('/api/redis', redis);
 
 app.listen( port, () => {
     console.log(`App listening at http://localhost:${port}`);
