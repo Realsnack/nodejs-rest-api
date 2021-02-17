@@ -8,11 +8,20 @@ require('dotenv').config();
 
 const app = express()
 const port = 3000;
+const middlewares = require('./middlewares');
+const redis = require('./api/redis');
 
 app.get('/', (req,res) => {
     res.statuscode = 200;
     res.json({
         message: 'Hello World',
+    })
+});
+
+app.get('/:name', (req,res) => {
+    res.statuscode = 200;
+    res.json({
+        message: `Hello ${req.params.name}`,
     })
 });
 
