@@ -4,7 +4,7 @@ node {
     }
     
     stage('Build docker image') {
-        sh 'docker build -t 192.168.1.27:49153:latest .'
+        sh 'docker build -t 192.168.1.27:49153/nodejs-restapi:latest .'
     }
 
     stage('Push image') {
