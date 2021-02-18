@@ -72,7 +72,7 @@ router.get('/count/:pattern', async (req, res, next) => {
 function keyScan(pattern, req, res, next) {
   console.log(`Searching for pattern ${pattern}*`)
   try {
-    var count = scanner.scan(`${pattern}*`, (err, matchingKeys) => {
+    scanner.scan(`${pattern}*`, (err, matchingKeys) => {
       if (err) throw(err);
       
       console.log(matchingKeys.length);
