@@ -11,6 +11,11 @@ const port = 3080;
 const middlewares = require('./middlewares');
 const redis = require('./api/redis');
 
+app.use(morgan('dev'));
+app.use(helmet.hsts());
+app.use(cors());
+app.use(bodyParser.json());
+
 app.get('/', (req,res) => {
     res.statusCode = 200;
     res.json({
