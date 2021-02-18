@@ -4,10 +4,10 @@
 * /
   * Simple Hello world! ✅
 * /api/redis
-  * /get/:key -  Returns required key ❌
-  * /set - Inserts key into redis ❌
-  * /count - Returns count of all keys ❌
-  * /count/pattern - Returns count of specified pattern ❌
+  * /get/:key -  Returns required key ✅
+  * /set - Inserts key into redis ✅
+  * /count - Returns count of all keys ✅
+  * /count/pattern - Returns count of specified pattern ✅
 * /api/Employee
   * /get/all - Returns all employee ❌
   * /get/:id - Returns employee with given id ❌
@@ -21,7 +21,7 @@
 * Monitoring middleware - Prometheus statistics ❌
 
 ### Technologies:
-* Redis ❌
+* Redis ✅
 * PostgreSQL ❌
 * Elasticsearch ❌
 * Kafka ❌
