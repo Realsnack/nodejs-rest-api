@@ -10,6 +10,7 @@ const app = express()
 const port = 3080;
 const middlewares = require('./middlewares');
 const redis = require('./api/redis');
+const employees = require('./api/employees');
 
 app.use(morgan('dev'));
 app.use(helmet.hsts());
@@ -31,6 +32,7 @@ app.get('/:name', (req,res) => {
 });
 
 app.use('/api/redis', redis);
+app.use('/api/employees', employees);
 
 app.listen( port, () => {
     console.log(`App listening at http://localhost:${port}`);
