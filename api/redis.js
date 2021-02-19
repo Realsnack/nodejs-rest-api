@@ -1,17 +1,18 @@
-const {Router, json } = require('express');
+const { Router, json } = require('express');
 const router = Router();
 const redisClient = require('redis');
 const client = redisClient.createClient(
-    "//192.168.1.27:6379"
+  "//192.168.1.27:6379"
 );
 const redisScan = require('node-redis-scan');
+const info = require('redis-info');
 const scanner = new redisScan(client);
 
 client.on("error", (error) => {
-    console.error(error)
+  console.error(error)
 });
 
-router.get('/', async (req,res,next) => {
+router.get('/', async (req, res, next) => {
   try {
     // Get redis status from PING
     var redisStatus = client.PING();
@@ -46,8 +47,8 @@ router.post('/set', async (req, res, next) => {
     try {
       const key = req.body.key;
       const value = req.body.value;
-      
-      client.SET(key,value);
+
+      client.SET(key, value);
       res.json({
         result: true,
         key: key,
@@ -73,19 +74,108 @@ function keyScan(pattern, req, res, next) {
   console.log(`Searching for pattern ${pattern}*`)
   try {
     scanner.scan(`${pattern}*`, (err, matchingKeys) => {
-      if (err) throw(err);
-      
+      if (err) throw (err);
+
       console.log(matchingKeys.length);
-      
+
       res.json({
         pattern: pattern,
         count: matchingKeys.length,
       });
     });
   } catch (error) {
-    next (error)
+    next(error)
   }
 }
+
+router.get('/info/server', async (req, res, next) => {
+  try {
+    console.log('Redis INFO');
+    client.info(function (err, replay) {
+      var infoObj = info.parse(replay);
+      res.json({
+        redis_version: infoObj.redis_version,
+        redis_build_id: infoObj.redis_build_id,
+        redis_mode: infoObj.redis_mode,
+        os: infoObj.os,
+        tcp_port: infoObj.tcp_port,
+      })
+    });
+  } catch (error) {
+    console.log(error);
+    next(error);
+  }
+});
+
+router.get('/info/clients', async (req, res, next) => {
+  try {
+    console.log('Redis INFO');
+    client.info(function (err, replay) {
+      var infoObj = info.parse(replay);
+      res.json({
+        connected_clients: infoObj.connected_clients,
+        blocked_clients: infoObj.blocked_clients,
+        clients_in_timeout_table: infoObj.clients_in_timeout_table,
+      })
+    });
+  } catch (error) {
+    console.log(error);
+    next(error);
+  }
+});
+
+router.get('/info/memory', async (req, res, next) => {
+  try {
+    console.log('Redis INFO');
+    client.info(function (err, replay) {
+      var infoObj = info.parse(replay);
+      res.json({
+        used_memory_huma: infoObj.used_memory_human,
+        used_memory_peak_human: infoObj.used_memory_peak_human,
+        total_system_memory_human: infoObj.total_system_memory_human,
+      })
+    });
+  } catch (error) {
+    console.log(error);
+    next(error);
+  }
+});
+
+router.get('/info/stats', async (req, res, next) => {
+  try {
+    console.log('Redis INFO');
+    client.info(function (err, replay) {
+      var infoObj = info.parse(replay);
+      res.json({
+        total_connections_received: infoObj.total_connections_received,
+        total_commands_processed: infoObj.total_commands_processed,
+        keyspace_hits: infoObj.keyspace_hits,
+        keyspace_misses: infoObj.keyspace_misses,
+        total_reads_processed: infoObj.total_reads_processed,
+        total_writes_processed: infoObj.total_writes_processed,
+      })
+    });
+  } catch (error) {
+    console.log(error);
+    next(error);
+  }
+});
+
+router.get('/info/cpu', async (req, res, next) => {
+  try {
+    console.log('Redis INFO');
+    client.info(function (err, replay) {
+      var infoObj = info.parse(replay);
+      res.json({
+        used_cpu_sys: infoObj.used_cpu_sys,
+        used_cpu_user: infoObj.used_cpu_user
+      })
+    });
+  } catch (error) {
+    console.log(error);
+    next(error);
+  }
+});
 
 router.get('/:key', async (req, res, next) => {
   try {
@@ -96,7 +186,7 @@ router.get('/:key', async (req, res, next) => {
       });
     });
   } catch (error) {
-    next (error);
+    next(error);
   }
 });
 

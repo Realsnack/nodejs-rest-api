@@ -30,6 +30,7 @@
     "morgan": "^1.10.0",
     "node-redis-scan": "^1.2.1",
     "redis": "^3.0.2",
+    "redis-info": "^3.0.8",
     "serve-favicon": "^2.5.0"
   }
 }
