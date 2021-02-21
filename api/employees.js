@@ -1,64 +1,56 @@
-const { Router, json } = require('express');
+const { Router } = require('express');
 const router = Router();
-const { Client } = require('pg');
-const conString = 'postgresql://nodejs-rest_app:Nodeheslo@192.168.1.27:5432/nodejs-rest';
-const client = new Client({
-    user: 'nodejs-rest_app',
-    host: '192.168.1.27',
-    database: 'nodejs-rest',
-    password: 'Nodeheslo',
-    port: 5432,
+const { Pool, Client } = require('pg');
+const tableName = 'employees';
+require('dotenv').config({ path: './config/db.env' });
+
+const pool = new Pool({
+    host: process.env.DB_HOST,
+    user: process.env.DB_USER,
+    password: process.env.DB_PASSWORD,
+    database: process.env.DB_DATABASE,
+    max: process.env.DB_POOL_LIMIT,
+    idleTimeoutMillis: process.env.DB_IDLE_TIMEOUT,
+    connectionTimeoutMillis: process.env.DB_CONNECTION_TIMEOUT,
 });
-const tableName = 'employees'; 
 
-client.connect(err => {
+pool.connect((err, client, release) => {
     if (err) {
-        console.error('Cannot connect to PostgreSQL', err.stack);
-    } else {
-        console.log('Connected to PostgreSQL');
-
-        // Check if table is created in DB. If not create it.
-        var select = 'SELECT * FROM pg_catalog.pg_tables where tablename = $1';
-        var values = [ tableName ];
-        
-        console.log(`Check existence for table ${tableName}`);
-        client.query(select, values, (error, result) => {
-            if (result.rowCount == 0)
-            {
-                // Create table.
-                console.log(`Table ${tableName} does not exist`);
-                client.query('CREATE SEQUENCE IF NOT EXISTS employeeId;');
-                client.query('CREATE TABLE employees (id integer NOT NULL DEFAULT nextval(\'employeeId\'), name varchar(64) NOT NULL, position varchar(32) NOT NULL,  salary integer NOT NULL, managerId integer, PRIMARY KEY(id));', (error2, result2) => {
-                    if (error2 == null) {
-                        console.log(`Table ${tableName} created successfully`);
-                    }
-                });
-            } else {
-                console.debug(`Table ${tableName} already exists`);
-            }
-        });
+        return console.error('Error acquiring client', err.stack)
     }
+    client.query('SELECT NOW()', (error, result) => {
+        release()
+        if (error) {
+            return console.error('Error executing query', err.stack)
+        }
+        console.log(result.rows)
+    })
 });
 
 router.get('/', async (req, res, next) => {
     try {
-        client.query('SELECT NOW()', (error, result) => {
-            console.debug(result)
-            if (error) {
-                console.error('Connection error', err.stack);
-                next(error)
+        var query = 'SELECT NOW()';
+        pool.connect((err, client, release) => {
+            if (err) {
+                return console.error('Error acquiring client', err.stack);
             }
+            client.query(query, (error, result) => {
+                release();
+                if (error) {
+                    return console.error('Error executing query', err.stack);
+                }
+                var postgresStatus;
+                if (result.rowCount == 1) {
+                    postgresStatus = true
+                } else {
+                    postgresStatus = false;
+                }
 
-            var postgresStatus;
-            if (result.rowCount == 1) {
-                postgresStatus = true;
-            } else {
-                postgresStatus = false;
-            }
+                res.json({
+                    message: 'Welcome to Employees API',
+                    isPostgresUp: postgresStatus,
+                });
 
-            res.json({
-                message: 'Welcome to Employees api',
-                isPostgresUp: postgresStatus,
             });
         });
     } catch (error) {
@@ -68,16 +60,22 @@ router.get('/', async (req, res, next) => {
 
 router.get('/all', async (req, res, next) => {
     try {
-        var select = `SELECT * FROM ${tableName}`;
-        client.query(select, (error, result) => {
-            var employees = result.rows;
-            if (error == null) {
+        var query = `SELECT * FROM ${tableName}`;
+        pool.connect((err, client, release) => {
+            if (err) {
+                return console.error('Error acquiring client', err.stack);
+            }
+            client.query(query, (error, result) => {
+                release();
+                if (error) {
+                    return console.error('Error executing query', err.stack);
+                }
+
+                var employees = result.rows;
                 res.json({
                     employees,
                 });
-            } else {
-                next(error);
-            }
+            });
         });
     } catch (error) {
         next(error);

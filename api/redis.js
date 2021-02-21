@@ -1,11 +1,13 @@
 const { Router, json } = require('express');
 const router = Router();
 const redisClient = require('redis');
-const client = redisClient.createClient(
-  "//192.168.1.27:6379"
-);
 const redisScan = require('node-redis-scan');
 const info = require('redis-info');
+require('dotenv').config({path: './config/redis.env'});
+
+const client = redisClient.createClient(
+  process.env.REDIS_HOST,
+);
 const scanner = new redisScan(client);
 
 client.on("error", (error) => {
