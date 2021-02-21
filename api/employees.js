@@ -1,8 +1,8 @@
 const { Router } = require('express');
 const router = Router();
 const { Pool, Client } = require('pg');
-const tableName = 'employees';
 require('dotenv').config({ path: './config/db.env' });
+const tableName = process.env.DB_EMPLOYEES_TABLE;
 
 const pool = new Pool({
     host: process.env.DB_HOST,
@@ -21,23 +21,32 @@ pool.connect((err, client, release) => {
     client.query('SELECT NOW()', (error, result) => {
         release()
         if (error) {
-            return console.error('Error executing query', err.stack)
+            console.error('Error executing query', err.stack)
         }
         console.log(result.rows)
     })
 });
+
+pool.on("error", (error) => {
+    console.error(error)
+  });
 
 router.get('/', async (req, res, next) => {
     try {
         var query = 'SELECT NOW()';
         pool.connect((err, client, release) => {
             if (err) {
-                return console.error('Error acquiring client', err.stack);
+                console.error('Error acquiring client', err.stack);
+
+                return res.json({
+                    message: 'Welcome to Employees API',
+                    isPostgresUp: false,
+                });
             }
             client.query(query, (error, result) => {
                 release();
                 if (error) {
-                    return console.error('Error executing query', err.stack);
+                    console.error('Error executing query', err.stack);
                 }
                 var postgresStatus;
                 if (result.rowCount == 1) {

@@ -1,4 +1,4 @@
-const { Router, json } = require('express');
+const { Router } = require('express');
 const router = Router();
 const redisClient = require('redis');
 const redisScan = require('node-redis-scan');
