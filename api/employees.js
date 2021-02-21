@@ -66,4 +66,22 @@ router.get('/', async (req, res, next) => {
     }
 });
 
+router.get('/all', async (req, res, next) => {
+    try {
+        var select = `SELECT * FROM ${tableName}`;
+        client.query(select, (error, result) => {
+            var employees = result.rows;
+            if (error == null) {
+                res.json({
+                    employees,
+                });
+            } else {
+                next(error);
+            }
+        });
+    } catch (error) {
+        next(error);
+    }
+});
+
 module.exports = router;
