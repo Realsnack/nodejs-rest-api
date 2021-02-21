@@ -4,13 +4,13 @@
 * /
   * Simple Hello world! ✅
 * /api/redis
-  * /get/:key -  Returns required key ✅
+  * /:key -  Returns required key ✅
   * /set - Inserts key into redis ✅
   * /count - Returns count of all keys ✅
   * /count/pattern - Returns count of specified pattern ✅
 * /api/Employee
-  * /get/all - Returns all employee ❌
-  * /get/:id - Returns employee with given id ❌
+  * /all - Returns all employee ❌
+  * /:id - Returns employee with given id ❌
   * /new - Creates a new employee ❌
   * /edit/:id - Put to edit an employee ❌
   * /remove/:id - Remove employee with given id ❌

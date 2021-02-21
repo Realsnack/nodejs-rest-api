@@ -12,7 +12,7 @@ const middlewares = require('./middlewares');
 const redis = require('./api/redis');
 const employees = require('./api/employees');
 
-app.use(morgan('dev'));
+app.use(morgan('tiny'));
 app.use(helmet.hsts());
 app.use(cors());
 app.use(bodyParser.json());
@@ -33,6 +33,9 @@ app.get('/:name', (req,res) => {
 
 app.use('/api/redis', redis);
 app.use('/api/employees', employees);
+
+app.use(middlewares.notFound);
+app.use(middlewares.errorHandler);
 
 app.listen( port, () => {
     console.log(`App listening at http://localhost:${port}`);
