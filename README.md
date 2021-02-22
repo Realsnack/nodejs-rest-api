@@ -10,7 +10,7 @@
   * /count/pattern - Returns count of specified pattern ✅
 * /api/Employee
   * /all - Returns all employee ✅
-  * /:id - Returns employee with given id ❌
+  * /:id - Returns employee with given id ✅
   * /new - Creates a new employee ✅
   * /edit/:id - Put to edit an employee ❌
   * /remove/:id - Delete employee with given id ❌
