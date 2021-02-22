@@ -103,9 +103,9 @@ router.get('/all', async (req, res, next) => {
 router.post('/new', async (req, res, next) => {
     try {
         const { body: employee } = req;
-
+        
         await schema.validate(employee);
-
+        
         console.log(JSON.stringify(employee));
         var query = `INSERT INTO ${tableName} (name, position, salary, managerId) VALUES('${employee.name}','${employee.position}',${employee.salary},${employee.managerId})`;
         pool.connect((err, client, release) => {
@@ -122,6 +122,36 @@ router.post('/new', async (req, res, next) => {
                 res.json({
                     createdEmployee: employee,
                 })
+            });
+        });
+    } catch (error) {
+        next(error);
+    }
+});
+
+router.get('/:id', async (req, res, next) => {
+    try {
+        var intId = parseInt(req.params.id);
+
+       if (intId.toString() == 'NaN') {
+           throw new Error(`Cannot convert id ${req.params.id} to integet`);
+       }
+
+        var query = `SELECT * FROM ${tableName} WHERE id = ${intId}`;
+        pool.connect((err, client, release) => {
+            if (err) {
+                next(error);
+            }
+            client.query(query, (error, result) => {
+                release();
+                if (error) {
+                    next(error);
+                }
+
+                var employees = result.rows;
+                res.json({
+                    employees,
+                });
             });
         });
     } catch (error) {
