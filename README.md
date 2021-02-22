@@ -9,11 +9,11 @@
   * /count - Returns count of all keys ✅
   * /count/pattern - Returns count of specified pattern ✅
 * /api/Employee
-  * /all - Returns all employee ❌
+  * /all - Returns all employee ✅
   * /:id - Returns employee with given id ❌
-  * /new - Creates a new employee ❌
+  * /new - Creates a new employee ✅
   * /edit/:id - Put to edit an employee ❌
-  * /remove/:id - Remove employee with given id ❌
+  * /remove/:id - Delete employee with given id ❌
 * /health - Returns health of all applications and dependencies ❌
 
 ### Middlewares:
@@ -22,7 +22,7 @@
 
 ### Technologies:
 * Redis ✅
-* PostgreSQL ❌
+* PostgreSQL ✅
 * Elasticsearch ❌
 * Kafka ❌
 * Prometheus ❌

@@ -1,8 +1,17 @@
 const { Router } = require('express');
 const router = Router();
-const { Pool, Client } = require('pg');
+const { Pool } = require('pg');
+const yup = require('yup');
 require('dotenv').config({ path: './config/db.env' });
 const tableName = process.env.DB_EMPLOYEES_TABLE;
+
+const schema = yup.object().shape({
+    id: yup.number().positive().notRequired(),
+    name: yup.string().max(64).required(),
+    position: yup.string().max(32).required(),
+    managerId: yup.number().notRequired(),
+    salary: yup.number().positive().required(),
+});
 
 const pool = new Pool({
     host: process.env.DB_HOST,
@@ -29,7 +38,7 @@ pool.connect((err, client, release) => {
 
 pool.on("error", (error) => {
     console.error(error)
-  });
+});
 
 router.get('/', async (req, res, next) => {
     try {
@@ -72,18 +81,47 @@ router.get('/all', async (req, res, next) => {
         var query = `SELECT * FROM ${tableName}`;
         pool.connect((err, client, release) => {
             if (err) {
-                return console.error('Error acquiring client', err.stack);
+                next(error);
             }
             client.query(query, (error, result) => {
                 release();
                 if (error) {
-                    return console.error('Error executing query', err.stack);
+                    next(error);
                 }
 
                 var employees = result.rows;
                 res.json({
                     employees,
                 });
+            });
+        });
+    } catch (error) {
+        next(error);
+    }
+});
+
+router.post('/new', async (req, res, next) => {
+    try {
+        const { body: employee } = req;
+
+        await schema.validate(employee);
+
+        console.log(JSON.stringify(employee));
+        var query = `INSERT INTO ${tableName} (name, position, salary, managerId) VALUES('${employee.name}','${employee.position}',${employee.salary},${employee.managerId})`;
+        pool.connect((err, client, release) => {
+            if (err) {
+                next(err);
+            }
+            client.query(query, (error, result) => {
+                release();
+                if (error) {
+                    next(error);
+                }
+                
+                res.statusCode = 201;
+                res.json({
+                    createdEmployee: employee,
+                })
             });
         });
     } catch (error) {
