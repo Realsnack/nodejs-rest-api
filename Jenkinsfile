@@ -18,4 +18,8 @@ node {
     stage('Run docker image') {
         sh 'docker run -d --name nodejs-rest_api -p 3080:3080 192.168.1.27:49153/nodejs-restapi:latest'
     }
+
+    stage('Run integration tests') {
+        sh 'cd test && python3 app.py'
+    }
 }
