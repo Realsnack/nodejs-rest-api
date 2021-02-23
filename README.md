@@ -9,7 +9,7 @@
   * GET /count - Returns count of all keys ✅
   * GET /count/pattern - Returns count of specified pattern ✅
 * /api/Employee
-  * GET /all - Returns all employee ✅
+  * GET /all - Returns all employees ✅
   * GET /:id - Returns employee with given id ✅
   * POST /new - Creates a new employee ✅
   * PUT /:id - Put to edit an employee ✅
@@ -32,3 +32,21 @@
 ### Optional implementations
 * Generate swagger (json/yaml)
 * Implement SwaggerUI
+
+### Objects examples
+* Redis-Key
+
+{
+  "key": "keyName",
+  "value": "valueToStore"
+}
+
+* Employee
+
+{
+  "id": 2,
+  "name": "Full Name",
+  "position": "PositionName",
+  "salary": 50000,
+  "managerId": 1
+}

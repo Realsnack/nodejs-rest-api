@@ -39,8 +39,15 @@ class TestCollection:
         self.apiClient.apiEndpoint = apiEndpoint
         employeesTests = EmployeesApiTests(self.apiClient)
 
-        if(employeesTests.testEmployeesBase()):
+        # Generate random employee
+        id = 0
+        name = 'John Doe'
+        position = 'TestEmployee'
+        salary = 20000
+        managerId = 1
 
-            print('base ok')
+        if(employeesTests.testEmployeesBase()):
+            employeesTests.testEmployeesGetAll()
+            employeesTests.testEmployeesPostNew(name, position, salary, managerId)
         else:
             raise Exception('PostgreSQL returned as down')
