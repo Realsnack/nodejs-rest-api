@@ -78,12 +78,18 @@ class TestCollection:
         key = 'todo'
         value = 'todo'
 
-        countKeys = self.testRedisCountKeys(apiEndpoint)
-        base = self.testRedisBase(apiEndpoint)
-        countPattern = self.testRedisCountPattern(apiEndpoint, key)
-        set = self.testRedisSetKey(apiEndpoint, key, value)
-        get = self.testRedisGetKey(apiEndpoint, key, value)
-        countKeysFinal = self.testRedisCountKeys(
-            apiEndpoint, int(countKeys) + 1)
-        countPatternFinal = self.testRedisCountPattern(
-            apiEndpoint, key, int(countPattern) + 1)
+        try:
+            countKeys = self.testRedisCountKeys(apiEndpoint)
+            base = self.testRedisBase(apiEndpoint)
+            countPattern = self.testRedisCountPattern(apiEndpoint, key)
+            set = self.testRedisSetKey(apiEndpoint, key, value)
+            get = self.testRedisGetKey(apiEndpoint, key, value)
+            countKeysFinal = self.testRedisCountKeys(
+                apiEndpoint, int(countKeys) + 1)
+            countPatternFinal = self.testRedisCountPattern(
+                apiEndpoint, key, int(countPattern) + 1)
+        except Exception as e:
+            if hasattr(e, 'message'):
+                print(e.message)
+            else:
+                print(e)

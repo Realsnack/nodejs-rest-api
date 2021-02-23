@@ -2,6 +2,7 @@
 import configparser
 import json
 
+
 # Import testcollection
 from testCollection import TestCollection
 
@@ -11,5 +12,11 @@ with open('config.json', 'r') as f:
     config = json.load(f)
 
 # Run tests
-tc = TestCollection(config['BaseUrl'])
-tc.testRedisEndpoint(config['RedisEndpoint'])
+try:
+    tc = TestCollection(config['BaseUrl'])
+    tc.testRedisEndpoint(config['RedisEndpoint'])
+except Exception as e:
+    if hasattr(e, 'message'):
+        print(e.message)
+    else:
+        print(e)
