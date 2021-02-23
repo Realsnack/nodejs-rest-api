@@ -14,6 +14,9 @@ with open('config.json', 'r') as f:
 try:
     tc = TestCollection(config['BaseUrl'])
     tc.testRedisEndpoint(config['RedisEndpoint'])
+    
+    tc.testEmployeesEndpoint(config['EmployeesEndpoint'])
+    print('Test successful - No errors occured')
 except Exception as e:
     if hasattr(e, 'message'):
         print(e.message)

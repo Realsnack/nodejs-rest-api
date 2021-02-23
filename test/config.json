@@ -1,4 +1,5 @@
 {
     "BaseUrl": "http://192.168.1.27:3080",
-    "RedisEndpoint": "/api/redis/"
+    "RedisEndpoint": "/api/redis/",
+    "EmployeesEndpoint": "/api/employees/"
 }

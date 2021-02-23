@@ -3,6 +3,7 @@ import random
 
 from apiClient import ApiClient
 from redisApiTests import RedisApiTests
+from employeesApiTests import EmployeesApiTests
 
 
 class TestCollection:
@@ -11,7 +12,7 @@ class TestCollection:
 
     def testRedisEndpoint(self, apiEndpoint):
         self.apiClient.apiEndpoint = apiEndpoint
-        redis = RedisApiTests(self.apiClient)
+        redisTests = RedisApiTests(self.apiClient)
 
         # Generate random key and value
         key = ''.join((random.choice(string.ascii_lowercase)
@@ -22,13 +23,24 @@ class TestCollection:
         print('Generated key-value combo: ' + key + ':' + value)
 
         # testRedisBase to check if Redis is Up and it makes sense to run other tests
-        if (redis.testRedisBase()):
-            initialCount = redis.testRedisCountKeys()
-            initialCountPattern = redis.testRedisCountPattern(key)
-            set = redis.testRedisSetKey(key, value)
-            get = redis.testRedisGetKey(key, value)
-            countKeysFinal = redis.testRedisCountKeys(int(initialCount) + 1)
-            countPatternFinal = redis.testRedisCountPattern(key, int(initialCountPattern) + 1)
-            redis.testRedisDeleteKey(key)
+        if (redisTests.testRedisBase()):
+            initialCount = redisTests.testRedisCountKeys()
+            initialCountPattern = redisTests.testRedisCountPattern(key)
+            set = redisTests.testRedisSetKey(key, value)
+            get = redisTests.testRedisGetKey(key, value)
+            countKeysFinal = redisTests.testRedisCountKeys(int(initialCount) + 1)
+            countPatternFinal = redisTests.testRedisCountPattern(
+                key, int(initialCountPattern) + 1)
+            redisTests.testRedisDeleteKey(key)
         else:
-            raise Exception('Redis returned as not Up')
+            raise Exception('Redis returned as down')
+
+    def testEmployeesEndpoint(self, apiEndpoint):
+        self.apiClient.apiEndpoint = apiEndpoint
+        employeesTests = EmployeesApiTests(self.apiClient)
+
+        if(employeesTests.testEmployeesBase()):
+
+            print('base ok')
+        else:
+            raise Exception('PostgreSQL returned as down')
