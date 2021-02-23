@@ -4,16 +4,16 @@
 * /
   * Simple Hello world! ✅
 * /api/redis
-  * /:key -  Returns required key ✅
-  * /set - Inserts key into redis ✅
-  * /count - Returns count of all keys ✅
-  * /count/pattern - Returns count of specified pattern ✅
+  * GET /:key -  Returns required key ✅
+  * POST /set - Inserts key into redis ✅
+  * GET /count - Returns count of all keys ✅
+  * GET /count/pattern - Returns count of specified pattern ✅
 * /api/Employee
-  * /all - Returns all employee ✅
-  * /:id - Returns employee with given id ✅
-  * /new - Creates a new employee ✅
-  * /edit/:id - Put to edit an employee ❌
-  * /remove/:id - Delete employee with given id ❌
+  * GET /all - Returns all employee ✅
+  * GET /:id - Returns employee with given id ✅
+  * POST /new - Creates a new employee ✅
+  * PUT /:id - Put to edit an employee ✅
+  * DELETE /:id - Delete employee with given id ✅
 * /health - Returns health of all applications and dependencies ❌
 
 ### Middlewares:

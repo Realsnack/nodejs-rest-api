@@ -103,11 +103,10 @@ router.get('/all', async (req, res, next) => {
 router.post('/new', async (req, res, next) => {
     try {
         const { body: employee } = req;
-
         await schema.validate(employee);
-
         console.log(JSON.stringify(employee));
         var query = `INSERT INTO ${tableName} (name, position, salary, managerId) VALUES('${employee.name}','${employee.position}',${employee.salary},${employee.managerId})`;
+
         pool.connect((err, client, release) => {
             if (err) {
                 next(err);
@@ -120,12 +119,41 @@ router.post('/new', async (req, res, next) => {
 
                 res.statusCode = 201;
                 res.json({
-                    createdEmployee: employee,
-                })
+                    employee,
+                });
             });
         });
     } catch (error) {
         next(error);
+    }
+});
+
+router.put('/:id', async (req, res, next) => {
+    try {
+        const { body: employee } = req
+        await schema.validate(employee);
+        console.log(JSON.stringify(employee));
+        var query = `UPDATE ${tableName} (name, position, salary, managerId) VALUES('${employee.name}','${employee.position}',${employee.salary},${employee.managerId} WHERE id = ${employee.id})`;
+
+        pool.connect((err, client, release) => {
+            if (err) {
+                next(err)
+            }
+
+            client.query(query, (error, result) => {
+                release();
+                if (error) {
+                    next(error)
+                }
+
+                res.statusCode = 200;
+                res.json({
+                    employee,
+                });
+            });
+        });
+    } catch (error) {
+
     }
 });
 
@@ -134,7 +162,7 @@ router.get('/:id', async (req, res, next) => {
         var intId = parseInt(req.params.id);
 
         if (intId.toString() == 'NaN') {
-            throw new Error(`Cannot convert id ${req.params.id} to integet`);
+            throw new Error(`Cannot convert id ${req.params.id} to integer`);
         }
 
         var query = `SELECT * FROM ${tableName} WHERE id = ${intId}`;
@@ -161,7 +189,29 @@ router.get('/:id', async (req, res, next) => {
 
 router.delete('/:id', async (req, res, next) => {
     try {
-        
+        var intId = parseInt(req.params.id);
+
+        if (intId.toString() == 'NaN') {
+            throw new Error(`Cannot convert id ${req.params.id} to integer`);
+        }
+
+        var query = `DELETE FROM ${tableName} WHERE id = ${intId}`;
+        pool.connect((err, client, release) => {
+            if (err) {
+                next(error);
+            }
+            client.query(query, (error, result) => {
+                release();
+                if (error) {
+                    next(error);
+                }
+
+                var employees = result.rows;
+                res.json({
+                    employees,
+                });
+            });
+        });
     } catch (error) {
         next(error);
     }
