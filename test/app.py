@@ -2,7 +2,6 @@
 import configparser
 import json
 
-
 # Import testcollection
 from testCollection import TestCollection
 
@@ -20,3 +19,4 @@ except Exception as e:
         print(e.message)
     else:
         print(e)
+    exit(1)
