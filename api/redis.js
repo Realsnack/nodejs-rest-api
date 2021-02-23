@@ -3,7 +3,7 @@ const router = Router();
 const redisClient = require('redis');
 const redisScan = require('node-redis-scan');
 const info = require('redis-info');
-require('dotenv').config({path: './config/redis.env'});
+require('dotenv').config({ path: './config/redis.env' });
 
 const client = redisClient.createClient(
   process.env.REDIS_HOST,
@@ -185,6 +185,22 @@ router.get('/:key', async (req, res, next) => {
       res.json({
         key: req.params.key,
         value: value,
+      });
+    });
+  } catch (error) {
+    next(error);
+  }
+});
+
+router.delete('/:key', async (req, res, next) => {
+  try {
+    client.del(req.params.key, (error, value) => {
+      if (error) {
+        next(error)
+      }
+
+      res.json({
+        result: 'deleted'
       });
     });
   } catch (error) {
