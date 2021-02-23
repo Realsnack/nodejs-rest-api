@@ -38,7 +38,7 @@ router.post('/set', async (req, res, next) => {
   if (req.body.value == null) {
     responseString = responseString + 'value';
   }
-  if (response != '') {
+  if (responseString != '') {
     responseString = responseString + 'is missing';
     res.statusCode = 400;
     res.json({
