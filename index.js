@@ -8,14 +8,16 @@ require('dotenv').config({ path: './config/app.env' });
 
 const app = express()
 const port = process.env.APP_PORT || 3080;
-const middlewares = require('./middlewares');
-const redis = require('./api/redis');
-const employees = require('./api/employees');
-
 app.use(morgan('tiny'));
 app.use(helmet.hsts());
 app.use(cors());
 app.use(bodyParser.json());
+
+
+const middlewares = require('./middlewares');
+const redis = require('./api/redis');
+const employees = require('./api/employees');
+
 
 app.get('/', (req, res) => {
     res.statusCode = 200;
