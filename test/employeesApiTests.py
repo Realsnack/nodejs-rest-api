@@ -32,7 +32,7 @@ class EmployeesApiTests:
         return response
 
     def testEmployeesGetById(self, id):
-        print('Test Employees Post new')
+        print('Test Employees Get by id')
         uri = str(id)
 
         response = self.apiClient.testGetRequest(uri)

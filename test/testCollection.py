@@ -53,6 +53,10 @@ class TestCollection:
             id = self.getEmployeesIdByName(employees, name)
             employeesTests.testEmployeesGetById(id)
             employeesTests.testEmployeesDeleteById(id)
+            employees = employeesTests.testEmployeesGetAll()
+
+            if (self.getEmployeesIdByName(employees, name) != None):
+                print('Employee was not deleted')
         else:
             raise Exception('PostgreSQL returned as down')
 
@@ -62,5 +66,8 @@ class TestCollection:
             employeeDict[employee["name"]] = {}
             for key,value in employee.items():
                 employeeDict[employee["name"]][key]=value
-        
-        return employeeDict[name]['id']
+
+        try:
+            return employeeDict[name]['id']
+        except:
+            return None
