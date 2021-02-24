@@ -1,5 +1,6 @@
 import string
 import random
+import names
 
 from apiClient import ApiClient
 from redisApiTests import RedisApiTests
@@ -41,13 +42,25 @@ class TestCollection:
 
         # Generate random employee
         id = 0
-        name = 'John Doe'
+        name = names.get_full_name()
         position = 'TestEmployee'
         salary = 20000
         managerId = 1
 
         if(employeesTests.testEmployeesBase()):
-            employeesTests.testEmployeesGetAll()
             employeesTests.testEmployeesPostNew(name, position, salary, managerId)
+            employees = employeesTests.testEmployeesGetAll()
+            id = self.getEmployeesIdByName(employees, name)
+            employeesTests.testEmployeesGetById(id)
+            employeesTests.testEmployeesDeleteById(id)
         else:
             raise Exception('PostgreSQL returned as down')
+
+    def getEmployeesIdByName(self, employees, name):
+        employeeDict = {}
+        for employee in employees:
+            employeeDict[employee["name"]] = {}
+            for key,value in employee.items():
+                employeeDict[employee["name"]][key]=value
+        
+        return employeeDict[name]['id']
