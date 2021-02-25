@@ -208,4 +208,18 @@ router.delete('/:key', async (req, res, next) => {
   }
 });
 
-module.exports = router;
+function healthCheck(callback) {
+  var redisStatus = client.PING();
+
+  callback(redisStatus);
+
+  // client.PING((error) => {
+  //   if (error) {
+  //     callback(false);
+  //   } else {
+  //     callback(true);
+  //   }
+  // });
+};
+
+module.exports = { router, healthCheck };

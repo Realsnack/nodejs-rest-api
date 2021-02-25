@@ -18,12 +18,30 @@ const middlewares = require('./middlewares');
 const redis = require('./api/redis');
 const employees = require('./api/employees');
 
+app.use('/api/redis', redis.router);
+app.use('/api/employees', employees.router);
 
 app.get('/', (req, res) => {
     res.statusCode = 200;
     res.json({
         message: 'Hello World',
     })
+});
+
+app.get('/health', (req, res) => {
+    redis.healthCheck((redisHealth) => {
+        console.log('Redis health: ' + redisHealth);
+
+        employees.healthCheck((postgreHealth) => {
+            console.log('Postgres health: ' + postgreHealth);
+
+            res.statusCode = 200;
+            res.json({
+                redisStatus: redisHealth,
+                postgresStatus: postgreHealth,
+            });
+        });
+    });
 });
 
 app.get('/:name', (req, res) => {
@@ -33,8 +51,6 @@ app.get('/:name', (req, res) => {
     })
 });
 
-app.use('/api/redis', redis);
-app.use('/api/employees', employees);
 
 app.use(middlewares.notFound);
 app.use(middlewares.errorHandler);

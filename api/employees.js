@@ -32,7 +32,6 @@ pool.connect((err, client, release) => {
         if (error) {
             console.error('Error executing query', err.stack)
         }
-        console.log(result.rows)
     })
 });
 
@@ -217,4 +216,13 @@ router.delete('/:id', async (req, res, next) => {
     }
 });
 
-module.exports = router;
+function healthCheck(callback) {
+    pool.connect((err) => {
+        if (err) {
+            callback(false);
+        }
+        callback(true);
+    });
+};
+
+module.exports = { router, healthCheck };
