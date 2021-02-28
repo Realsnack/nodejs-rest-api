@@ -217,11 +217,11 @@ router.delete('/:id', async (req, res, next) => {
 });
 
 function healthCheck(callback) {
-    pool.connect((err) => {
-        if (err) {
-            callback(false);
+    pool.query(`SELECT NOW()`, (error) => {
+        if (error) {
+            return callback(false);
         }
-        callback(true);
+        return callback(true);
     });
 };
 
