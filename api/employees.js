@@ -152,7 +152,7 @@ router.put('/:id', async (req, res, next) => {
             });
         });
     } catch (error) {
-
+        next(error);
     }
 });
 

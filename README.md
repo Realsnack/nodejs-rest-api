@@ -14,7 +14,7 @@
   * POST /new - Creates a new employee ✅
   * PUT /:id - Put to edit an employee ✅
   * DELETE /:id - Delete employee with given id ✅
-* /health - Returns health of all applications and dependencies ❌
+* /health - Returns health of all applications and dependencies ✅
 
 ### Middlewares:
 * Logger middleware - Audit logging from Kafka into Elasticsearch ❌
@@ -37,16 +37,16 @@
 * Redis-Key
 
 {
-  "key": "keyName",
-  "value": "valueToStore"
+  "key": string,
+  "value": string
 }
 
 * Employee
 
 {
-  "id": 2,
-  "name": "Full Name",
-  "position": "PositionName",
-  "salary": 50000,
-  "managerId": 1
+  "id": integer,
+  "name": string,
+  "position": string,
+  "salary": int,
+  "managerId": int
 }
