@@ -29,17 +29,16 @@ app.get('/', (req, res) => {
 });
 
 app.get('/health', (req, res) => {
-    redis.healthCheck((redisHealth) => {
-        console.log('Redis health: ' + redisHealth);
+    var redisHealth = redis.healthCheck();
+    console.log('Redis health: ' + redisHealth);
 
-        employees.healthCheck((postgreHealth) => {
-            console.log('Postgres health: ' + postgreHealth);
+    employees.healthCheck((postgreHealth) => {
+        console.log('Postgres health: ' + postgreHealth);
 
-            res.statusCode = 200;
-            res.json({
-                redisStatus: redisHealth,
-                postgresStatus: postgreHealth,
-            });
+        res.statusCode = 200;
+        res.json({
+            redisStatus: redisHealth,
+            postgresStatus: postgreHealth,
         });
     });
 });
