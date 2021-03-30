@@ -1,3 +1,9 @@
+const apm = require('elastic-apm-node').start({
+    serviceName: 'nodejs-rest-api',
+    serverUrl: 'http://ubuntu01.msvacina.cz:8200',
+    environment: 'Production',
+  })
+
 const express = require('express');
 const morgan = require('morgan');
 const helmet = require('helmet');
