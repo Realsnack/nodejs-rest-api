@@ -27,7 +27,7 @@
     "dotenv": "^8.2.0",
     "elastic-apm-node": "^3.12.1",
     "express": "^4.17.1",
-    "helmet": "^4.4.1",
+    "helmet": "^4.6.0",
     "morgan": "^1.10.0",
     "node-redis-scan": "^1.2.1",
     "pg": "^8.5.1",
