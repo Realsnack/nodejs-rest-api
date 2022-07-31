@@ -4,7 +4,7 @@
 //     environment: 'Production',
 //   });
 
-import { Request, Response } from 'express'; 'express';
+import { Request, Response } from 'express';
 import express from 'express';
 const morgan = require('morgan');
 const helmet = require('helmet');
@@ -36,16 +36,16 @@ app.get('/', (req: Request, res: Response) => {
 });
 
 app.get('/health', (req: Request, res: Response) => {
-    var redisHealth = redis.healthCheck();
+    let redisHealth = redis.healthCheck();
     console.log('Redis health: ' + redisHealth);
 
-    employees.healthCheck((postgreHealth: string) => {
-        console.log('Postgres health: ' + postgreHealth);
+    employees.healthCheck((postgresHealth: string) => {
+        console.log('Postgres health: ' + postgresHealth);
 
         res.statusCode = 200;
         res.json({
             redisStatus: redisHealth,
-            postgresStatus: postgreHealth,
+            postgresStatus: postgresHealth,
         });
     });
 });

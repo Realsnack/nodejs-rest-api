@@ -1,7 +1,5 @@
-import { NextFunction, Request, Response } from "express";
+import Router, {NextFunction, Request, Response} from "express";
 
-import Router from 'express';
-import { Console } from "console";
 const router = Router();
 const redisClient = require('redis');
 const redisScan = require('node-redis-scan');
@@ -20,7 +18,7 @@ client.on("error", (error: Error) => {
 router.get('/', async (req: Request, res: Response, next: NextFunction) => {
   try {
     // Get redis status from PING
-    var redisStatus = client.PING();
+    const redisStatus = client.PING();
 
     // Return response
     res.json({
@@ -34,7 +32,7 @@ router.get('/', async (req: Request, res: Response, next: NextFunction) => {
 });
 
 router.post('/set', async (req: Request, res: Response, next: NextFunction) => {
-  var responseString = '';
+  let responseString = '';
   console.log(req.body);
   if (req.body.key == null) {
     responseString = responseString + 'key ';
@@ -98,7 +96,7 @@ router.get('/info/server', async (req: Request, res: Response, next: NextFunctio
   try {
     console.log('Redis INFO');
     client.info(function (err: Error, reply: string) {
-      var infoObj = info.parse(reply);
+      const infoObj = info.parse(reply);
       res.json({
         redis_version: infoObj.redis_version,
         redis_build_id: infoObj.redis_build_id,
@@ -117,7 +115,7 @@ router.get('/info/clients', async (req: Request, res: Response, next: NextFuncti
   try {
     console.log('Redis INFO');
     client.info(function (err: Error, reply: string) {
-      var infoObj = info.parse(reply);
+      const infoObj = info.parse(reply);
       res.json({
         connected_clients: infoObj.connected_clients,
         blocked_clients: infoObj.blocked_clients,
@@ -134,7 +132,7 @@ router.get('/info/memory', async (req: Request, res: Response, next: NextFunctio
   try {
     console.log('Redis INFO');
     client.info(function (err: Error, reply: string) {
-      var infoObj = info.parse(reply);
+      const infoObj = info.parse(reply);
       res.json({
         used_memory_huma: infoObj.used_memory_human,
         used_memory_peak_human: infoObj.used_memory_peak_human,
@@ -151,7 +149,7 @@ router.get('/info/stats', async (req: Request, res: Response, next: NextFunction
   try {
     console.log('Redis INFO');
     client.info(function (err: Error, reply: string) {
-      var infoObj = info.parse(reply);
+      const infoObj = info.parse(reply);
       res.json({
         total_connections_received: infoObj.total_connections_received,
         total_commands_processed: infoObj.total_commands_processed,
@@ -171,7 +169,7 @@ router.get('/info/cpu', async (req: Request, res: Response, next: NextFunction) 
   try {
     console.log('Redis INFO');
     client.info(function (err: Error, reply: string) {
-      var infoObj = info.parse(reply);
+      const infoObj = info.parse(reply);
       res.json({
         used_cpu_sys: infoObj.used_cpu_sys,
         used_cpu_user: infoObj.used_cpu_user
@@ -198,7 +196,7 @@ router.get('/get/:key', async (req: Request, res: Response, next: NextFunction) 
 
 router.delete('/delete/:key', async (req: Request, res: Response, next: NextFunction) => {
   try {
-    client.del(req.params.key, (error: Error, value: string) => {
+    client.del(req.params.key, (error: Error) => {
       if (error) {
         next(error)
       }
@@ -213,9 +211,7 @@ router.delete('/delete/:key', async (req: Request, res: Response, next: NextFunc
 });
 
 function healthCheck() {
-  var redisStatus = client.PING();
-
-  return redisStatus;
-};
+  return client.PING();
+}
 
 module.exports = { router: router, healthCheck };

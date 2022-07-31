@@ -1,8 +1,10 @@
-import { Router } from 'express';
+import {Router} from 'express';
+import {PoolClient, QueryResult} from "pg";
+
 const router = Router();
-const { Pool } = require('pg');
+const {Pool} = require('pg');
 const yup = require('yup');
-require('dotenv').config({ path: './config/db.env' });
+require('dotenv').config({path: './config/db.env'});
 const tableName = process.env.DB_EMPLOYEES_TABLE;
 
 const schema = yup.object().shape({
@@ -24,26 +26,26 @@ const pool = new Pool({
     connectionTimeoutMillis: process.env.DB_CONNECTION_TIMEOUT,
 });
 
-pool.connect((err, client, release) => {
+pool.connect((err: Error, client: PoolClient, release: (release?: any) => void) => {
     if (err) {
         return console.error('Error acquiring client', err.stack)
     }
-    client.query('SELECT NOW()', (error: Error, result) => {
+    client.query('SELECT NOW()', (error: Error) => {
         release()
         if (error) {
-            console.error('Error executing query', err.stack)
+            console.error('Error executing query', error.stack)
         }
     })
 });
 
-pool.on("error", (error) => {
+pool.on("error", (error: Error) => {
     console.error(error)
 });
 
 router.get('/', async (req, res, next) => {
     try {
-        var query = 'SELECT NOW()';
-        pool.connect((err, client, release) => {
+        const query = 'SELECT NOW()';
+        pool.connect((err: Error, client: PoolClient, release: (release?: any) => void) => {
             if (err) {
                 console.error('Error acquiring client', err.stack);
 
@@ -55,14 +57,10 @@ router.get('/', async (req, res, next) => {
             client.query(query, (error, result) => {
                 release();
                 if (error) {
-                    console.error('Error executing query', err.stack);
+                    console.error('Error executing query', error.stack);
                 }
-                var postgresStatus;
-                if (result.rowCount == 1) {
-                    postgresStatus = true
-                } else {
-                    postgresStatus = false;
-                }
+                let postgresStatus;
+                postgresStatus = result.rowCount == 1;
 
                 res.json({
                     message: 'Welcome to Employees API',
@@ -78,18 +76,19 @@ router.get('/', async (req, res, next) => {
 
 router.get('/all', async (req, res, next) => {
     try {
-        var query = `SELECT * FROM ${tableName}`;
-        pool.connect((err, client, release) => {
+        const query = `SELECT * FROM ${tableName}`;
+        // TODO: Create method for pool connect
+        pool.connect((err: Error, client: PoolClient, release: (release?: any) => void) => {
             if (err) {
-                next(error);
+                next(err);
             }
-            client.query(query, (error, result) => {
+            client.query(query, (error: Error, result: QueryResult) => {
                 release();
                 if (error) {
                     next(error);
                 }
 
-                var employees = result.rows;
+                const employees = result.rows;
                 res.json({
                     employees,
                 });
@@ -102,16 +101,16 @@ router.get('/all', async (req, res, next) => {
 
 router.post('/new', async (req, res, next) => {
     try {
-        const { body: employee } = req;
-        await schema.validate(employee);
+        const {body: employee} = req;
+        schema.validate(employee);
         console.log(JSON.stringify(employee));
-        var query = `INSERT INTO ${tableName} (name, position, salary, managerId) VALUES('${employee.name}','${employee.position}',${employee.salary},${employee.managerId})`;
+        const query = `INSERT INTO ${tableName} (name, position, salary, managerId) VALUES('${employee.name}','${employee.position}',${employee.salary},${employee.managerId})`;
 
-        pool.connect((err, client, release) => {
+        pool.connect((err: Error, client: PoolClient, release: (release?: any) => void) => {
             if (err) {
                 next(err);
             }
-            client.query(query, (error, result) => {
+            client.query(query, (error: Error) => {
                 release();
                 if (error) {
                     next(error);
@@ -128,19 +127,19 @@ router.post('/new', async (req, res, next) => {
     }
 });
 
-router.put('/:id', async (req, res, next) => {
+router.put("/:id", async (req, res, next) => {
     try {
-        const { body: employee } = req
-        await schema.validate(employee);
+        const {body: employee} = req
+        schema.validate(employee);
         console.log(JSON.stringify(employee));
-        var query = `UPDATE ${tableName} (name, position, salary, managerId) VALUES('${employee.name}','${employee.position}',${employee.salary},${employee.managerId} WHERE id = ${employee.id})`;
+        const query = `UPDATE ${tableName} (name, position, salary, managerId) VALUES('${employee.name}','${employee.position}',${employee.salary},${employee.managerId} WHERE id = ${employee.id})`;
 
-        pool.connect((err, client, release) => {
+        pool.connect((err: Error, client: PoolClient, release: (release?: any) => void) => {
             if (err) {
                 next(err)
             }
 
-            client.query(query, (error, result) => {
+            client.query(query, (error: Error) => {
                 release();
                 if (error) {
                     next(error)
@@ -157,73 +156,66 @@ router.put('/:id', async (req, res, next) => {
     }
 });
 
-router.get('/:id', async (req, res, next) => {
-    try {
-        var intId = parseInt(req.params.id);
+router.get("/:id", async (req, res, next) => {
+    const intId = parseInt(req.params.id);
 
-        if (intId.toString() == 'NaN') {
-            throw new Error(`Cannot convert id ${req.params.id} to integer`);
+    if (intId.toString() == 'NaN') {
+        throw new Error(`Cannot convert id ${req.params.id} to integer`);
+    }
+
+    const query = `SELECT * FROM ${tableName} WHERE id = ${intId}`;
+    pool.connect((err: Error, client: PoolClient, release: (release?: any) => void) => {
+        if (err) {
+            next(err);
         }
-
-        var query = `SELECT * FROM ${tableName} WHERE id = ${intId}`;
-        pool.connect((err, client, release) => {
-            if (err) {
+        client.query(query, (error, result) => {
+            release();
+            if (error) {
                 next(error);
             }
-            client.query(query, (error, result) => {
-                release();
-                if (error) {
-                    next(error);
-                }
 
-                var employees = result.rows;
-                res.json({
-                    employees,
-                });
+            const employees = result.rows;
+            res.json({
+                employees,
             });
         });
-    } catch (error) {
-        next(error);
-    }
+    });
 });
 
-router.delete('/:id', async (req, res, next) => {
-    try {
-        var intId = parseInt(req.params.id);
+router.delete("/:id", async (req, res, next) => {
 
-        if (intId.toString() == 'NaN') {
-            throw new Error(`Cannot convert id ${req.params.id} to integer`);
+    const intId = parseInt(req.params.id);
+
+    if (intId.toString() == 'NaN') {
+        throw new Error(`Cannot convert id ${req.params.id} to integer`);
+    }
+
+    const query = `DELETE FROM ${tableName} WHERE id = ${intId}`;
+    pool.connect((err: Error, client: PoolClient, release: (release?: any) => void) => {
+        if (err) {
+            next(err);
         }
-
-        var query = `DELETE FROM ${tableName} WHERE id = ${intId}`;
-        pool.connect((err, client, release) => {
-            if (err) {
+        client.query(query, (error: Error, result: QueryResult) => {
+            release();
+            if (error) {
                 next(error);
             }
-            client.query(query, (error, result) => {
-                release();
-                if (error) {
-                    next(error);
-                }
 
-                var employees = result.rows;
-                res.json({
-                    employees,
-                });
+            const employees = result.rows;
+            res.json({
+                employees,
             });
         });
-    } catch (error) {
-        next(error);
-    }
+    });
 });
 
-function healthCheck(callback) {
-    pool.query(`SELECT NOW()`, (error) => {
+function healthCheck(callback: any) {
+    pool.query(`SELECT NOW()`, (error: Error) => {
         if (error) {
             return callback(false);
         }
         return callback(true);
     });
-};
+}
 
-module.exports = { router: router, healthCheck };
+module.exports = {router: router, healthCheck};
