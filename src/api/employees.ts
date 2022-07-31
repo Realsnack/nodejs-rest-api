@@ -1,4 +1,4 @@
-const { Router } = require('express');
+import { Router } from 'express';
 const router = Router();
 const { Pool } = require('pg');
 const yup = require('yup');
@@ -16,6 +16,7 @@ const schema = yup.object().shape({
 const pool = new Pool({
     host: process.env.DB_HOST,
     user: process.env.DB_USER,
+    port: process.env.DB_PORT,
     password: process.env.DB_PASSWORD,
     database: process.env.DB_DATABASE,
     max: process.env.DB_POOL_LIMIT,
@@ -27,7 +28,7 @@ pool.connect((err, client, release) => {
     if (err) {
         return console.error('Error acquiring client', err.stack)
     }
-    client.query('SELECT NOW()', (error, result) => {
+    client.query('SELECT NOW()', (error: Error, result) => {
         release()
         if (error) {
             console.error('Error executing query', err.stack)
@@ -225,4 +226,4 @@ function healthCheck(callback) {
     });
 };
 
-module.exports = { router, healthCheck };
+module.exports = { router: router, healthCheck };

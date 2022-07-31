@@ -1,4 +1,7 @@
-const { Router } = require('express');
+import { NextFunction, Request, Response } from "express";
+
+import Router from 'express';
+import { Console } from "console";
 const router = Router();
 const redisClient = require('redis');
 const redisScan = require('node-redis-scan');
@@ -10,11 +13,11 @@ const client = redisClient.createClient(
 );
 const scanner = new redisScan(client);
 
-client.on("error", (error) => {
+client.on("error", (error: Error) => {
   console.error(error)
 });
 
-router.get('/', async (req, res, next) => {
+router.get('/', async (req: Request, res: Response, next: NextFunction) => {
   try {
     // Get redis status from PING
     var redisStatus = client.PING();
@@ -30,13 +33,14 @@ router.get('/', async (req, res, next) => {
   }
 });
 
-router.post('/set', async (req, res, next) => {
+router.post('/set', async (req: Request, res: Response, next: NextFunction) => {
   var responseString = '';
+  console.log(req.body);
   if (req.body.key == null) {
-    responseString = responseString + 'key';
+    responseString = responseString + 'key ';
   }
   if (req.body.value == null) {
-    responseString = responseString + 'value';
+    responseString = responseString + 'value ';
   }
   if (responseString != '') {
     responseString = responseString + 'is missing';
@@ -64,18 +68,18 @@ router.post('/set', async (req, res, next) => {
   }
 });
 
-router.get('/count', async (req, res, next) => {
+router.get('/count', async (req: Request, res: Response, next: NextFunction) => {
   keyScan('*', req, res, next);
 });
 
-router.get('/count/:pattern', async (req, res, next) => {
+router.get('/count/:pattern', async (req: Request, res: Response, next: NextFunction) => {
   keyScan(req.params.pattern, req, res, next);
 });
 
-function keyScan(pattern, req, res, next) {
+function keyScan(pattern: string, req: Request, res: Response, next: NextFunction) {
   console.log(`Searching for pattern ${pattern}*`)
   try {
-    scanner.scan(`${pattern}*`, (err, matchingKeys) => {
+    scanner.scan(`${pattern}*`, (err:Error, matchingKeys: string[]) => {
       if (err) throw (err);
 
       console.log(matchingKeys.length);
@@ -90,11 +94,11 @@ function keyScan(pattern, req, res, next) {
   }
 }
 
-router.get('/info/server', async (req, res, next) => {
+router.get('/info/server', async (req: Request, res: Response, next: NextFunction) => {
   try {
     console.log('Redis INFO');
-    client.info(function (err, replay) {
-      var infoObj = info.parse(replay);
+    client.info(function (err: Error, reply: string) {
+      var infoObj = info.parse(reply);
       res.json({
         redis_version: infoObj.redis_version,
         redis_build_id: infoObj.redis_build_id,
@@ -109,11 +113,11 @@ router.get('/info/server', async (req, res, next) => {
   }
 });
 
-router.get('/info/clients', async (req, res, next) => {
+router.get('/info/clients', async (req: Request, res: Response, next: NextFunction) => {
   try {
     console.log('Redis INFO');
-    client.info(function (err, replay) {
-      var infoObj = info.parse(replay);
+    client.info(function (err: Error, reply: string) {
+      var infoObj = info.parse(reply);
       res.json({
         connected_clients: infoObj.connected_clients,
         blocked_clients: infoObj.blocked_clients,
@@ -126,11 +130,11 @@ router.get('/info/clients', async (req, res, next) => {
   }
 });
 
-router.get('/info/memory', async (req, res, next) => {
+router.get('/info/memory', async (req: Request, res: Response, next: NextFunction) => {
   try {
     console.log('Redis INFO');
-    client.info(function (err, replay) {
-      var infoObj = info.parse(replay);
+    client.info(function (err: Error, reply: string) {
+      var infoObj = info.parse(reply);
       res.json({
         used_memory_huma: infoObj.used_memory_human,
         used_memory_peak_human: infoObj.used_memory_peak_human,
@@ -143,11 +147,11 @@ router.get('/info/memory', async (req, res, next) => {
   }
 });
 
-router.get('/info/stats', async (req, res, next) => {
+router.get('/info/stats', async (req: Request, res: Response, next: NextFunction) => {
   try {
     console.log('Redis INFO');
-    client.info(function (err, replay) {
-      var infoObj = info.parse(replay);
+    client.info(function (err: Error, reply: string) {
+      var infoObj = info.parse(reply);
       res.json({
         total_connections_received: infoObj.total_connections_received,
         total_commands_processed: infoObj.total_commands_processed,
@@ -163,11 +167,11 @@ router.get('/info/stats', async (req, res, next) => {
   }
 });
 
-router.get('/info/cpu', async (req, res, next) => {
+router.get('/info/cpu', async (req: Request, res: Response, next: NextFunction) => {
   try {
     console.log('Redis INFO');
-    client.info(function (err, replay) {
-      var infoObj = info.parse(replay);
+    client.info(function (err: Error, reply: string) {
+      var infoObj = info.parse(reply);
       res.json({
         used_cpu_sys: infoObj.used_cpu_sys,
         used_cpu_user: infoObj.used_cpu_user
@@ -179,9 +183,9 @@ router.get('/info/cpu', async (req, res, next) => {
   }
 });
 
-router.get('/:key', async (req, res, next) => {
+router.get('/get/:key', async (req: Request, res: Response, next: NextFunction) => {
   try {
-    client.get(req.params.key, (error, value) => {
+    client.get(req.params.key, (error: Error, value: string) => {
       res.json({
         key: req.params.key,
         value: value,
@@ -192,9 +196,9 @@ router.get('/:key', async (req, res, next) => {
   }
 });
 
-router.delete('/:key', async (req, res, next) => {
+router.delete('/delete/:key', async (req: Request, res: Response, next: NextFunction) => {
   try {
-    client.del(req.params.key, (error, value) => {
+    client.del(req.params.key, (error: Error, value: string) => {
       if (error) {
         next(error)
       }
@@ -214,4 +218,4 @@ function healthCheck() {
   return redisStatus;
 };
 
-module.exports = { router, healthCheck };
+module.exports = { router: router, healthCheck };

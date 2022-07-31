@@ -1,10 +1,11 @@
-const apm = require('elastic-apm-node').start({
-    serviceName: 'nodejs-rest-api',
-    serverUrl: 'http://ubuntu01.msvacina.cz:8200',
-    environment: 'Production',
-  })
+// const apm = require('elastic-apm-node').start({
+//     serviceName: 'nodejs-rest-api',
+//     serverUrl: 'http://ubuntu01.msvacina.cz:8200',
+//     environment: 'Production',
+//   });
 
-const express = require('express');
+import { Request, Response } from 'express'; 'express';
+import express from 'express';
 const morgan = require('morgan');
 const helmet = require('helmet');
 const bodyParser = require('body-parser');
@@ -27,18 +28,18 @@ const employees = require('./api/employees');
 app.use('/api/redis', redis.router);
 app.use('/api/employees', employees.router);
 
-app.get('/', (req, res) => {
+app.get('/', (req: Request, res: Response) => {
     res.statusCode = 200;
     res.json({
         message: 'Hello World',
     })
 });
 
-app.get('/health', (req, res) => {
+app.get('/health', (req: Request, res: Response) => {
     var redisHealth = redis.healthCheck();
     console.log('Redis health: ' + redisHealth);
 
-    employees.healthCheck((postgreHealth) => {
+    employees.healthCheck((postgreHealth: string) => {
         console.log('Postgres health: ' + postgreHealth);
 
         res.statusCode = 200;
@@ -49,8 +50,8 @@ app.get('/health', (req, res) => {
     });
 });
 
-app.get('/:name', (req, res) => {
-    res.statuscode = 200;
+app.get('/:name', (req: Request, res: Response) => {
+    res.statusCode = 200;
     res.json({
         message: `Hello ${req.params.name}`,
     })
